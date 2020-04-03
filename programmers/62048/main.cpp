@@ -1,20 +1,17 @@
 #include <iostream>
-#include <cstdlib>
 
 using namespace std;
 
 long long solution(int width, int height) {
-    long long howMany = 0;
-    for(long long i = -width; i < height; i++) {
-        long long firstOp = abs(width * (height - i));
-        long long secondOp = width + height;
-
-        if(firstOp % secondOp != 0) {
-            howMany++;
+    int howMany = height + width - 1;
+    for(int i = 1; i < width; i++) {
+        int remain = (i * (long long)height) % width;
+        if(remain == 0) {
+            howMany--;
         }
     }
 
-    return (width * height) - howMany;
+    return ((long long)width * height) - howMany;
 }
 
 int main() {
