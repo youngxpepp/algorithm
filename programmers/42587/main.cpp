@@ -1,8 +1,8 @@
-#include <iostream>
 #include <string>
 #include <vector>
 #include <set>
-#include <map>
+#include <queue>
+#include <algorithm>
 #include <functional>
 
 using namespace std;
@@ -12,46 +12,26 @@ int solution(vector<int> priorities, int location) {
         return 1;
     }
     
-    int answer = location;
     multiset<int> prioritySet;
+    queue<pair<int, int> > q;
+    vector<int> order;
 
     for(int i = 0; i < priorities.size(); i++) {
         prioritySet.insert(priorities[i]);
+        q.push(make_pair(priorities[i], i));
     }
 
-    int index = 0;
-    while(index < priorities.size()) {
-        if(prioritySet.upper_bound(priorities[index]) != prioritySet.end()) {
-            if(index == answer) {
-                answer = priorities.size() - 1;
-            } else {
-                answer--;
-            }
-
-            priorities.push_back(priorities[index]);
-            priorities.erase(priorities.begin() + index);
+    while(!q.empty()) {
+        if(prioritySet.upper_bound(q.front().first) != prioritySet.end()) {
+            q.push(q.front());
+            q.pop();
         } else {
-            if(index == answer) {
-                break;
+            prioritySet.erase(--prioritySet.end());
+            order.push_back(q.front().second);
+            q.pop();
+            if(order.back() == location) {
+                return order.size();
             }
-            auto itr = prioritySet.end();
-            prioritySet.erase(--itr);
-            index++;
         }
     }
-
-    return answer + 1;
-}
-
-int main() {
-    vector<int> p;
-    p.push_back(1);
-    p.push_back(1);
-    p.push_back(9);
-    p.push_back(1);
-    p.push_back(1);
-    p.push_back(1);
-    solution(p, 0);
-    
-    return 0;
 }
