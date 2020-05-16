@@ -9,25 +9,15 @@ bool insertionSort(vector<int>& v) {
         return false;
     }
 
-    vector<int> _v;
-    _v.push_back(v[0]);
-    
     for(int i = 1; i < v.size(); i++) {
-        bool pushBack = true;
-        for(int j = 0; j < _v.size(); j++) {
-            if(v[i] <= _v[j]) {
-                _v.insert(_v.begin() + j, v[i]);
-                pushBack = false;
-                break;
-            }
-        }
-        if(pushBack) {
-            _v.push_back(v[i]);
+        int j = i;
+        while(v[j - 1] > v[j] || j == 0) {
+            int temp = v[j - 1];
+            v[j - 1] = v[j];
+            v[j] = temp;
+            j--;
         }
     }
-
-    v.clear();
-    v.assign(_v.begin(), _v.end());
 
     return true;
 }
