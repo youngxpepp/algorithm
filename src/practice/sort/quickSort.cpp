@@ -14,21 +14,21 @@ void quickSort(vector<int>& v, int start, int end) {
     int j = end;
 
     while(i <= j) {
-        while(i < end && v[i] <= v[pivot]) {
+        while(i <= end && v[i] <= v[pivot]) {
             i++;
         }
         while(j > start && v[j] >= v[pivot]) {
             j--;
         }
 
-        if(i < j) {
+        if(i > j) {
+            int temp = v[j];
+            v[j] = v[start];
+            v[start] = temp;
+        } else {
             int temp = v[i];
             v[i] = v[j];
             v[j] = temp;
-        } else if(i >= j) {
-            int temp = v[j];
-            v[j] = v[pivot];
-            v[pivot] = temp;
         }
     }
     quickSort(v, start, j - 1);
