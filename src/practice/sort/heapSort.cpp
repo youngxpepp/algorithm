@@ -3,34 +3,49 @@
 
 using namespace std;
 
-void heapify(vector<int>& v, int size) {
-    if(size < 1) {
-        return;
-    }
-    
-    for(int i = 1; i < size; i++) {
-        int current = i;
-        int root = (current - 1) / 2;
+void siftDown(vector<int>& v, int current, int last) {
+    while((current * 2) + 1 <= last) {
+        int leftChild = (current * 2) + 1;
+        int rightChild = (current * 2) + 2;
+        int max = current;
 
-        while(v[current] > v[root] && current != 0) {
+        if(v[leftChild] > v[max]) {
+            max = leftChild;
+        }
+
+        if(rightChild <= last && v[rightChild] > v[max]) {
+            max = rightChild;
+        }
+
+        if(max != current) {
             int temp = v[current];
-            v[current] = v[root];
-            v[root] = temp;
-            current = root;
-            root = (current - 1) / 2;
+            v[current] = v[max];
+            v[max] = temp;
+            current = max;
+        } else {
+            return;
         }
     }
 }
 
-void heapSort(vector<int>& v) {
+void heapifyBottomUp(vector<int>& v) {
     int lastIndex = v.size() - 1;
-    while(lastIndex != 0) {
-        int temp = v[lastIndex];
-        v[lastIndex] = v[0];
-        v[0] = temp;
+    int current = (lastIndex - 1) / 2;
+    while(current >= 0) {
+        siftDown(v, current, lastIndex);
+        current--;
+    }
+}
 
-        heapify(v, lastIndex);
-        lastIndex--;
+void heapSort(vector<int>& v) {
+    heapifyBottomUp(v);
+
+    for(int i = v.size() - 1; i > 0; i--) {
+        int temp = v[0];
+        v[0] = v[i];
+        v[i] = temp;
+
+        siftDown(v, 0, i - 1);
     }
 }
 
@@ -38,22 +53,20 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
 
-    int N;
+    int N = 0;
     cin >> N;
-    vector<int> v;
+
+    vector<int> v(N, 0);
 
     for(int i = 0; i < N; i++) {
-        int input;
-        cin >> input;
-        v.push_back(input);
+        cin >> v[i];
     }
 
-    heapify(v, v.size());
     heapSort(v);
 
     for(const auto& element : v) {
-        cout << element << " ";
+        cout << element << "\n";
     }
-
+    
     return 0;
 }

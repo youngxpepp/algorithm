@@ -3,47 +3,49 @@
 
 using namespace std;
 
-int* sortedArr;
+void siftDown(vector<int>& v, int current, int last) {
+    while((current * 2) + 1 <= last) {
+        int leftChild = (current * 2) + 1;
+        int rightChild = (current * 2) + 2;
+        int max = current;
 
-void merge(int arr[], int start, int end) {
-    int middle = (start + end) / 2;
-    int i = start;
-    int j = middle + 1;
-    int k = start;
-
-    while(i <= middle && j <= end) {
-        if(arr[i] <= arr[j]) {
-            sortedArr[k] = arr[i];
-            i++;
-        } else {
-            sortedArr[k] = arr[j];
-            j++;
+        if(v[leftChild] > v[max]) {
+            max = leftChild;
         }
-        k++;
-    }
 
-    while(i <= middle) {
-        sortedArr[k] = arr[i];
-        i++;
-        k++;
-    }
-    while(j <= end) {
-        sortedArr[k] = arr[j];
-        j++;
-        k++;
-    }
+        if(rightChild <= last && v[rightChild] > v[max]) {
+            max = rightChild;
+        }
 
-    for(int t = start; t <= end; t++) {
-        arr[t] = sortedArr[t];
+        if(max != current) {
+            int temp = v[current];
+            v[current] = v[max];
+            v[max] = temp;
+            current = max;
+        } else {
+            return;
+        }
     }
 }
 
-void mergeSort(int arr[], int start, int end) {
-    if(start < end) {
-        int middle = (start + end) / 2;
-        mergeSort(arr, start, middle);
-        mergeSort(arr, middle + 1, end);
-        merge(arr, start, end);
+void heapifyBottomUp(vector<int>& v) {
+    int lastIndex = v.size() - 1;
+    int current = (lastIndex - 1) / 2;
+    while(current >= 0) {
+        siftDown(v, current, lastIndex);
+        current--;
+    }
+}
+
+void heapSort(vector<int>& v) {
+    heapifyBottomUp(v);
+
+    for(int i = v.size() - 1; i > 0; i--) {
+        int temp = v[0];
+        v[0] = v[i];
+        v[i] = temp;
+
+        siftDown(v, 0, i - 1);
     }
 }
 
@@ -54,17 +56,16 @@ int main() {
     int N = 0;
     cin >> N;
 
-    sortedArr = new int[N];
-    int arr[N];
+    vector<int> v(N, 0);
 
     for(int i = 0; i < N; i++) {
-        cin >> arr[i];
+        cin >> v[i];
     }
 
-    mergeSort(arr, 0, N - 1);
+    heapSort(v);
 
-    for(int i = 0; i < N; i++) {
-        cout << arr[i] << "\n";
+    for(const auto& element : v) {
+        cout << element << "\n";
     }
     
     return 0;
