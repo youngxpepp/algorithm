@@ -37,8 +37,25 @@ void heapifyBottomUp(vector<int>& v) {
     }
 }
 
+void siftUp(vector<int>& v, int current) {
+    int parent = (current - 1) / 2;
+    while(current > 0 && v[current] > v[parent]) {
+        int temp = v[current];
+        v[current] = v[parent];
+        v[parent] = temp;
+        current = parent;
+        parent = (current - 1) / 2;
+    }
+}
+
+void heapifyTopDown(vector<int>& v) {
+    for(int i = 1; i < v.size(); i++) {
+        siftUp(v, i);
+    }
+}
+
 void heapSort(vector<int>& v) {
-    heapifyBottomUp(v);
+    heapifyTopDown(v);
 
     for(int i = v.size() - 1; i > 0; i--) {
         int temp = v[0];
