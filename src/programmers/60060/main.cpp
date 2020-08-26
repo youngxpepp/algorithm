@@ -18,6 +18,12 @@ public:
         children.assign(26, nullptr);
     }
 
+    ~TrieNode() {
+        for(const auto &child : children) {
+            delete child;
+        }
+    }
+
     int getChildrenCount() {
         int count = 0;
         for(const auto &child : children) {
@@ -33,17 +39,13 @@ public:
 class TrieTree {
 public:
     TrieNode *head;
-    vector<TrieNode*> nodes;
 
     TrieTree() {
         head = new TrieNode();
-        nodes.push_back(head);
     }
 
     ~TrieTree() {
-        for(int i = 0; i < nodes.size(); i++) {
-            delete nodes[i];
-        }
+        delete head;
     }
 
     void insertNode(string word) {
@@ -61,8 +63,6 @@ public:
 
             if(now->children[index] == nullptr) {
                 now->children[index] = new TrieNode();
-
-                this->nodes.push_back(now->children[index]);
 
                 if(i == word.size() - 1) {
                     now->children[index]->terminal = true;
