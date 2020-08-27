@@ -45,6 +45,17 @@ public:
         }
 
         for(int i = 0; i < 4; i++) {
+            if((car.x == 0 && car.y == 0)) {
+                if(i == 0 || i == 2) {
+                    continue;
+                }
+                car.direction = i;
+            }
+
+            if(this->checkReversedDirections(car.direction, i)) {
+                continue;
+            }
+
             Car nextCar = car;
             nextCar.move(DIRECTION_POSITION[i][0], DIRECTION_POSITION[i][1]);
             nextCar.direction = i;
@@ -61,7 +72,7 @@ public:
                 continue;
             }
 
-            if(car.direction != i && !(car.x == 0 && car.y == 0)) {
+            if(car.direction != i) {
                 nextCar.corners++;
             }
             nextCar.distance++;
