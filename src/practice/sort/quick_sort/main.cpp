@@ -1,35 +1,37 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
-int divide(int *arr, const int left, const int right) {
-    int pivot = left;
-    int i = left + 1;
+int divide(vector<int> &num_vector, const int left, const int right) {
+    int mid = (left + right) / 2;
+    int pivot = num_vector[mid];
+    int i = left;
     int j = right;
 
-    while(i <= j) {
-        while(i <= right && arr[i] <= arr[pivot]) {
+    while (i <= j) {
+        while (num_vector[i] < pivot) {
             i++;
         }
-        while(j > left && arr[j] >= arr[pivot]) {
+        while (num_vector[j] > pivot) {
             j--;
         }
 
-        if(i > j) {
-            swap(arr[left], arr[j]);
-        } else {
-            swap(arr[i], arr[j]);
+        if (i <= j) {
+            swap(num_vector[i], num_vector[j]);
+            i++;
+            j--;
         }
     }
 
     return i;
 }
 
-void quick_sort(int *arr, const int left, const int right) {
+void quick_sort(vector<int> &num_vector, const int left, const int right) {
     if (left < right) {
-        int pivot = divide(arr, left, right);
-        quick_sort(arr, left, pivot - 1);
-        quick_sort(arr, pivot, right);
+        int mid = divide(num_vector, left, right);
+        quick_sort(num_vector, left, mid - 1);
+        quick_sort(num_vector, mid, right);
     }
 }
 
@@ -38,17 +40,17 @@ int main() {
     cin.tie(NULL);
 
     int n = 0;
-    int num_arr[1000] = {0,};
     cin >> n;
+    vector<int> num_vector(n, 0);
 
     for (int i = 0; i < n; i++) {
-        cin >> num_arr[i];
+        cin >> num_vector[i];
     }
 
-    quick_sort(num_arr, 0, n - 1);
+    quick_sort(num_vector, 0, n - 1);
 
     for (int i = 0; i < n; i++) {
-        cout << num_arr[i] << "\n";
+        cout << num_vector[i] << "\n";
     }
 
     return 0;
