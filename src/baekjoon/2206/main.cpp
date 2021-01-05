@@ -2,82 +2,94 @@
 #include <vector>
 #include <queue>
 #include <string>
-#include <limits.h>
+#include <algorithm>
 
 using namespace std;
 
-const vector<pair<int, int>> directions{{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+int n = 0, m = 0;
+int matrix[1000][1000] = {0,};
+const pair<int, int> directions[] = {{1,  0},
+                                     {-1, 0},
+                                     {0,  1},
+                                     {0,  -1}};
 
-class Node {
+class bfs_node {
 public:
-    int x;
-    int y;
-    int distance = 1;
-    int removedCount = 0;
+    pair<int, int> position;
+    int distance;
+    int wall_count;
 
-    Node(int x, int y): x(x), y(y) {}
-
-    void move(int direction) {
-        this->x += directions[direction].first;
-        this->y += directions[direction].second;
-        this->distance += 1;
-    }
+    bfs_node(pair<int, int> position, int distance = 1, int wall_count = 0) : position(position), distance(distance),
+                                                                              wall_count(wall_count) {}
 };
 
-void dfs(Node node, vector<vector<int>> &myMap, vector<vector<vector<int>>> &visit) {
-    if(node.x == myMap.front().size() - 1 && node.y == myMap.size() - 1) {
-        return;
-    }
+int bfs(pair<int, int> start) {
+    vector<vector<vector<int>>> visit(1000, vector<vector<int>>(1000, vector<int>(2, -1)));;
+    visit[start.second][start.first][0] = 1;
+    queue<bfs_node> q;
+    q.push(bfs_node(start));
 
-    for(int i = 0; i < directions.size(); i++) {
-        Node nextNode = node;
-        nextNode.move(i);
+    while (!q.empty()) {
+        bfs_node node = q.front();
+        q.pop();
 
-        if(nextNode.x < 0 || nextNode.x >= myMap.front().size() || nextNode.y < 0 || nextNode.y >= myMap.size()) {
-            continue;
+        if (node.position.first == m - 1 && node.position.second == n - 1) {
+            return node.distance;
         }
 
-        if(nextNode.distance >= visit[nextNode.y][nextNode.x][nextNode.removedCount]) {
-            continue;
-        }
+        for (int i = 0; i < 4; i++) {
+            pair<int, int> next_position = node.position;
+            next_position.first += directions[i].first;
+            next_position.second += directions[i].second;
+            int next_distance = node.distance + 1;
+            int next_wall_count = node.wall_count;
 
-        if(myMap[nextNode.y][nextNode.x] == 1) {
-            if(nextNode.removedCount > 0) {
+            if (next_position.first < 0 ||
+                next_position.first >= m ||
+                next_position.second < 0 ||
+                next_position.second >= n) {
                 continue;
             }
-            nextNode.removedCount++;
-        }
 
-        visit[nextNode.y][nextNode.x][nextNode.removedCount] = nextNode.distance;
-        dfs(nextNode, myMap, visit);
+            if (matrix[next_position.second][next_position.first] == 1) {
+                if (node.wall_count == 1) {
+                    continue;
+                }
+                next_wall_count++;
+            }
+
+            if (visit[next_position.second][next_position.first][node.wall_count] != -1 &&
+                next_distance >= visit[next_position.second][next_position.first][node.wall_count]) {
+                continue;
+            }
+
+            visit[next_position.second][next_position.first][node.wall_count] = next_distance;
+            q.push(bfs_node(next_position, next_distance, next_wall_count));
+        }
     }
+
+    return -1;
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
+    cout.tie(NULL);
 
-    int n = 0, m = 0;
     cin >> n >> m;
-    vector<vector<int>> myMap(n, vector<int>());
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         string input = "";
         cin >> input;
-        for(int j = 0; j < m; j++) {
-            myMap[i].push_back(input[j] - '0');
+        for (int j = 0; j < input.size(); j++) {
+            if (input[j] == '1') {
+                matrix[i][j] = 1;
+            } else if (input[j] == '0') {
+                matrix[i][j] = 0;
+            }
         }
     }
 
-    vector<vector<vector<int>>> visit(n, vector<vector<int>>(m, vector<int>(2, INT_MAX)));
-    visit[0][0][0] = 1;
-    visit[0][0][1] = 1;
-    dfs(Node(0, 0), myMap, visit);
-
-    if(visit[n - 1][m - 1][0] == INT_MAX && visit[n - 1][m - 1][1] == INT_MAX) {
-        cout << -1;
-    } else {
-        cout << min(visit[n - 1][m - 1][0], visit[n - 1][m - 1][1]);
-    }
+    cout << bfs({0, 0}) << '\n';
 
     return 0;
 }
